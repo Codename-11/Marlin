@@ -65,6 +65,16 @@
   #endif
 #endif
 
+#ifdef MMU2_SERIAL_PORT
+  #if MMU2_SERIAL_PORT == -1
+    #define MMU2_SERIAL SerialUSB
+  #elif WITHIN(MMU2_SERIAL_PORT, 1, 6)
+    #define MMU2_SERIAL MSERIAL(MMU2_SERIAL_PORT)
+  #else
+    #error "MMU2_SERIAL_PORT must be -1 or from 1 to 6. Please update your configuration."
+  #endif
+#endif
+
 #ifdef LCD_SERIAL_PORT
   #if LCD_SERIAL_PORT == -1
     #define LCD_SERIAL SerialUSB
@@ -159,13 +169,13 @@ static inline int freeMemory() {
 
 #define HAL_ANALOG_SELECT(pin) pinMode(pin, INPUT)
 
-inline void HAL_adc_init() {}
-
 #define HAL_ADC_VREF         3.3
-#define HAL_ADC_RESOLUTION  10
+#define HAL_ADC_RESOLUTION  ADC_RESOLUTION // 12
 #define HAL_START_ADC(pin)  HAL_adc_start_conversion(pin)
 #define HAL_READ_ADC()      HAL_adc_result
 #define HAL_ADC_READY()     true
+
+inline void HAL_adc_init() { analogReadResolution(HAL_ADC_RESOLUTION); }
 
 void HAL_adc_start_conversion(const uint8_t adc_pin);
 
